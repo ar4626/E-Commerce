@@ -1,8 +1,7 @@
 const mongoose = require('mongoose');
-
 const dbConnect = () => {
     try {
-        const conn = mongoose.connect('mongodb+srv://ar2646:ar2646@mern.rqinryr.mongodb.net/');
+        const conn = mongoose.connect(process.env.MongoDB_URL);
         console.log('Connected to the database Successfully');
     }
     catch(error){
@@ -10,4 +9,4 @@ const dbConnect = () => {
     }
 };
 
-module.exports = dbConnect;
+module.exports = dbConnect; 
