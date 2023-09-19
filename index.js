@@ -6,11 +6,14 @@ const dbConnect = require('./config/dbConnect');
 const { notFound,errorHandler } = require('./middlewares/errorHandler');
 const PORT = process.env.PORT || 4000;
 const cookieParser = require('cookie-parser');
+const morgan = require('morgan');
 
 // const authRoute = require('./routes/authRoutes')
 
 //configuration of database and calling it form config
 dbConnect();
+
+app.use(morgan("dev"));
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(cookieParser());

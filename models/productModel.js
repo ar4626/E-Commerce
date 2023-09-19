@@ -22,15 +22,20 @@ var productSchema = new mongoose.Schema({
         required:true,
     },
     category:{
-        type: mongoose.Schema.Types.ObjectId,
-        ref:"Category"
+        // type: mongoose.Schema.Types.ObjectId,
+        // ref:"Category"
+        type:String,
+        required:true,
     },
     brand: {
         type:String,
-        enum: ["Apple", "Samsung","Lenovo","HP","DELL"]
+        required:true,
+        // type:String,
+        // enum: ["Apple", "Samsung","Lenovo","HP","DELL"]
     },
     quantity:{
         type:Number,
+        required:true,
         sold:{
             type:Number,
             default:0 ,
@@ -41,7 +46,9 @@ var productSchema = new mongoose.Schema({
     },
     color:{
         type:String,
-        enum:['Black', 'White', 'Red', 'Green', 'Yellow']
+        required:true,
+        // type:String,
+        // enum:['Black', 'White', 'Red', 'Green', 'Yellow']
     },
     ratings: [{
         star: Number,
