@@ -71,39 +71,56 @@ const getallProduct = asyncHandler(async (req, res) => {
     try {
 
         //fitering 
-        const queryObj = { ...req.query }                                    //this is the modified query 
-        const excludeFields = ["page", "sort", "linit", "fields"];            //which exclude the following fields
-        excludeFields.forEach((element) => delete queryObj[element])         //from the original req.query
+        const queryObj = { ...req.query };                                    //this is the modified query 
+        const excludeFields = ["page", "sort", "limit", "fields"];            //which exclude the following fields
+        excludeFields.forEach((element) => delete queryObj[element]);         //from the original req.query
         // console.log(queryObj,req.query);
 
         let queryStr = JSON.stringify(queryObj);
-        queryStr = queryStr.replace(/\b(gte|lte|lt|gt)\b/g, match => `$${match}`);               //performing the filter operation 
+        queryStr = queryStr.replace(/\b(gte|lte|lt|gt)\b/g, (match) => `$${match}`);               //performing the filter operation 
         // console.log(JSON.parse(queryStr));
 
-        let query = Product.find(JSON.parse(queryStr));
-
+        
         //sorting
-
+        
+        let query = Product.find(JSON.parse(queryStr));
         if (req.query.sort) {
             const sortBy = req.query.sort.split(',').join(" ");
-            query = query.sort(sortBy)
+            query = query.sort(sortBy);
         } else {
-            query = query.sort('createdAt')
+            query = query.sort('createdAt');
         }
-        
+
         //limiting the fields
-        
-        if(req.query.fields){
+
+        if (req.query.fields) {
             const fields = req.query.fields.split(",").join(" ");
-            query= query.select(fields)
-        }else{
-            query=query.select('-__v')
+            query = query.select(fields);
+        } else {
+            query = query.select('-__v');
         }
 
         //pagination
 
-        const product = await query;
-        res.json(product);
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 10; // Set a default limit if not provided
+        const skip = (page - 1) * limit;
+
+        query = query.skip(skip).limit(limit);
+        if (req.query.page){
+            const priductCount = await Product.countDocuments();
+            if(skip > priductCount){
+                throw new Error("This page doesnot exist")
+            }
+        }
+        console.log.apply(page,limit,skip);;
+
+
+        const products = await query;
+        if (products.length === 0) {                              // Check if products are empty and log the result
+            console.log("No products found for the given query.");
+        }
+        res.json(products);
 
     } catch (err) {
         throw new Error(err);
