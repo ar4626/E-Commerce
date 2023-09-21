@@ -1,11 +1,19 @@
-const  express = require('express');
-const { createProduct, getaProduct, getallProduct, updateProduct } = require('../controller/productController');
+const express = require('express');
+const {
+    createProduct,
+    getaProduct,
+    getallProduct,
+    updateProduct,
+    deleteProduct
+} = require('../controller/productController');
+const {isAdmin , authMiddleware } = require('../middlewares/authMiddleware');
 const router = express.Router();
 
-router.post('/',createProduct)
-router.get('/:id',getaProduct)
-router.put('/:id',updateProduct)
-router.get('/',getallProduct)
+router.post('/',authMiddleware , isAdmin , createProduct)
+router.get('/:id', getaProduct)
+router.put('/:id',authMiddleware , isAdmin , updateProduct)
+router.delete('/:id',authMiddleware , isAdmin , deleteProduct)
+router.get('/', getallProduct)
 
 
 
