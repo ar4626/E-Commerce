@@ -3,7 +3,9 @@ const User = require('../models/userModel')
 const asyncHandler = require('express-async-handler');
 const validateMongoDbId = require('../utils/validateMongoose');
 const { generateRefreshToken } = require('../config/refreshtoken');
-const jwt = require('jsonwebtoken')
+const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
+const { sendEmail } = require('./emailController');
 
 //create a user
 const createUser = asyncHandler(async (req, res) => {
@@ -34,9 +36,9 @@ const loginUserController = asyncHandler(async (req, res) => {
                 refreshToken
             }, {
             new: true,
-            }
+        }
         );
-        res.cookie("refreshToken",refreshToken, {
+        res.cookie("refreshToken", refreshToken, {
             httpOnly: true,
             maxAge: 72 * 60 * 60 * 1000,
         })
@@ -59,22 +61,22 @@ const loginUserController = asyncHandler(async (req, res) => {
 const handleRefreshToken = asyncHandler(async (req, res) => {
     const cookie = req.cookies;
     // console.log(cookie);
-    if(!cookie.refreshToken){
+    if (!cookie.refreshToken) {
         throw new Error("No refresh token in Cookies");
     }
     const refreshToken = cookie.refreshToken;
     console.log(refreshToken);
-    const user = await User.findOne({refreshToken})
-    if(!user){
+    const user = await User.findOne({ refreshToken })
+    if (!user) {
         throw new Error("No refresh token present in Database or not matched");
     }
-    jwt.verify(refreshToken, process.env.JWT_SECRET,(err,decoded) => {
+    jwt.verify(refreshToken, process.env.JWT_SECRET, (err, decoded) => {
         // console.log(decoded);
-        if(err || user.id !== decoded.id){
+        if (err || user.id !== decoded.id) {
             throw new Error("There is something wrong with refresh token")
         }
         const accessToken = generateToken(user?._id)
-        res.json({accessToken})
+        res.json({ accessToken })
 
     })
     // res.json(user);
@@ -82,27 +84,27 @@ const handleRefreshToken = asyncHandler(async (req, res) => {
 
 
 //logout functionallity
-const logout = asyncHandler(async(req,res) => {
+const logout = asyncHandler(async (req, res) => {
 
     const cookie = req.cookies;
-    if(!cookie?.refreshToken){
+    if (!cookie?.refreshToken) {
         throw new Error("No refresh token in Cookies");
     }
     const refreshToken = cookie.refreshToken;
-    const user = await User.findOne({refreshToken})
-    if(!user){
-        res.clearCookie("refreshToken" , {
-            httpOnly:true,
-            secure:true
+    const user = await User.findOne({ refreshToken })
+    if (!user) {
+        res.clearCookie("refreshToken", {
+            httpOnly: true,
+            secure: true
         })
         return res.sendStatus(204);   //forbidden
     }
-    await User.findOneAndUpdate({refreshToken},{
+    await User.findOneAndUpdate({ refreshToken }, {
         refreshToken: " ",
     })
-    res.clearCookie("refreshToken" , {
-        httpOnly:true,
-        secure:true
+    res.clearCookie("refreshToken", {
+        httpOnly: true,
+        secure: true
     })
     return res.sendStatus(204);
 })
@@ -207,21 +209,67 @@ const unblockUser = asyncHandler(async (req, res) => {
 })
 
 //update password
-const updatePassword = asyncHandler(async (req,res)=> {
-    const {_id} = req.user;
+const updatePassword = asyncHandler(async (req, res) => {
+    const { _id } = req.user;
     const password = req.body.password;
     validateMongoDbId(_id);
     const user = await User.findById(_id);
-    if(password){
+    if (password) {
 
         // console.log(typeof(password),typeof(user.password));
         user.password = password;
         const updatePassword = await user.save();
         res.json(updatePassword);
     }
-    else{
+    else {
         res.json(user);
     }
+});
+
+
+const forgotPasswordToken = asyncHandler(async (req, res) => {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+        throw new Error("User not found with this Email");
+    }
+    else {
+        try {
+            const token = await user.createPasswordResetToken();
+            await user.save();
+            const resetURL = `Hi, Please follow this LINK to reset your password. This link is valid for 10 Minutes form now. <a href='http://localhost:4000/api/user/reset-password/${token}'>Click Me</a>`;
+            const data = {
+                to: email,
+                subject: "Forgot Password Link",
+                htm: resetURL
+            };
+            sendEmail(data);
+            res.json(token);
+        } catch (err) {
+            throw new Error(err)
+        }
+    }
+});
+
+
+const resetPassword = asyncHandler(async (req, res) => {
+    const { password } = req.body;
+    const { token } = req.params;
+    const hashedToken = crypto.createHash("sha256").update(token).digest("hex");
+    console.log(token,hashedToken);
+    const user = await User.findOne({
+        passwordResetToken: hashedToken,
+        passwordResetExpires: { $gt: Date.now() }
+    });
+    if (!user) {
+        throw new Error("Token Expired, Please try again later.");
+    }
+    user.password = password;
+    user.passwordResetToken = undefined;
+    user.passwordResetExpires = undefined;
+    await user.save();
+    res.json(user)
+
 })
 
 
@@ -236,5 +284,7 @@ module.exports = {
     unblockUser,
     handleRefreshToken,
     logout,
-    updatePassword
+    updatePassword,
+    forgotPasswordToken,
+    resetPassword
 }
