@@ -21,13 +21,16 @@ app.use(cookieParser());
 app.use('/api/user', require('./routes/authRoutes'))
 app.use('/api/product', require('./routes/productRoutes'))
 app.use('/api/blog', require('./routes/blogRoutes'))
+app.use('/api/prodcategory',require('./routes/prodcategoryRoutes'))
+app.use('/api/blogcategory',require('./routes/blogcategoryRouter'))
+app.use('/api/brand',require('./routes/brandRouter'))
 
 app.use(notFound);
 app.use(errorHandler);
 
 // app.use('/', (req, res) => {
 //     res.send("Welcome to Ecommerce Application")
-// });
+// }); 
 
 app.listen(PORT, () => {
     console.log(`Server is running at Port ${PORT}`);
