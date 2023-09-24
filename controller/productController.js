@@ -1,4 +1,5 @@
 const Product = require('../models/productModel');
+const User = require('../models/userModel');
 const asyncHandler = require('express-async-handler');
 const slugify = require('slugify');
 
@@ -80,9 +81,9 @@ const getallProduct = asyncHandler(async (req, res) => {
         queryStr = queryStr.replace(/\b(gte|lte|lt|gt)\b/g, (match) => `$${match}`);               //performing the filter operation 
         // console.log(JSON.parse(queryStr));
 
-        
+
         //sorting
-        
+
         let query = Product.find(JSON.parse(queryStr));
         if (req.query.sort) {
             const sortBy = req.query.sort.split(',').join(" ");
@@ -107,13 +108,13 @@ const getallProduct = asyncHandler(async (req, res) => {
         const skip = (page - 1) * limit;
 
         query = query.skip(skip).limit(limit);
-        if (req.query.page){
+        if (req.query.page) {
             const priductCount = await Product.countDocuments();
-            if(skip > priductCount){
+            if (skip > priductCount) {
                 throw new Error("This page doesnot exist")
             }
         }
-        console.log.apply(page,limit,skip);;
+        console.log(page, limit, skip);;
 
 
         const products = await query;
@@ -125,6 +126,33 @@ const getallProduct = asyncHandler(async (req, res) => {
     } catch (err) {
         throw new Error(err);
     }
+});
+
+//Adding to wish list
+const addToWishList = asyncHandler(async (req, res) => {
+    const { _id } = req.user;
+    const { prodId } = req.body;
+    try {
+        const user = await User.findById(_id);
+        const alreadyadded = await user.wishlist.find(id => id.toString() === prodId);
+        if (alreadyadded) {
+            let user = await User.findByIdAndUpdate(_id, {
+                $pull: { wishlist: prodId }
+            }, {
+                new: true,
+            })
+            res.json(user)
+        } else {
+            let user = await User.findByIdAndUpdate(_id, {
+                $push: { wishlist: prodId }
+            }, {
+                new: true,
+            })
+            res.json(user)
+        }
+    } catch (err) {
+        throw new Error(err);
+    }
 })
 
 
@@ -133,5 +161,6 @@ module.exports = {
     getaProduct,
     getallProduct,
     updateProduct,
-    deleteProduct
+    deleteProduct,
+    addToWishList
 }
