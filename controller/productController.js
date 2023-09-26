@@ -2,7 +2,9 @@ const Product = require('../models/productModel');
 const User = require('../models/userModel');
 const asyncHandler = require('express-async-handler');
 const slugify = require('slugify');
-
+const validateMongoDbId = require('../utils/validateMongoose');
+const clodinaryUploadImg = require('../utils/cloudinary')
+const fs = require('fs')
 
 
 //For creating a new product 
@@ -169,7 +171,7 @@ const rating = asyncHandler(async (req, res) => {
             const updatedRating = await Product.updateOne({
                 ratings: { $elemMatch: alreadyRated }
             }, {
-                $set: { "ratings.$.star": star , "ratings.$.comment": comment }
+                $set: { "ratings.$.star": star, "ratings.$.comment": comment }
             }, {
                 new: true
             }
@@ -206,6 +208,42 @@ const rating = asyncHandler(async (req, res) => {
         throw new Error(err)
     }
 
+});
+
+const uploadImages = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    validateMongoDbId(id)
+    try {
+        const uploader = (path) => clodinaryUploadImg(path, "images");
+        const urls = [];
+        const files = req.files;
+
+        for  (const file of files) {
+            const { path } = file;
+            const newpath = await uploader(path);
+            console.log(newpath);
+            urls.push(newpath);
+            fs.unlinkSync(path);
+        }
+        const existingProduct = await Product.findById(id);
+
+        // Combine the existing images with the new ones
+        const updatedImages = existingProduct.images.concat(urls);
+
+        // Update the product with the combined image URLs
+        const findProduct = await Product.findByIdAndUpdate(id, {
+            images: updatedImages,
+            // images: urls.map((file)=>{
+            //     return file
+            // }),
+        }, {
+            new: true,
+        }
+        );
+        res.json(findProduct);
+    } catch (err) {
+        throw new Error(err)
+    }
 })
 
 
@@ -216,5 +254,6 @@ module.exports = {
     updateProduct,
     deleteProduct,
     addToWishList,
-    rating
+    rating,
+    uploadImages
 }
