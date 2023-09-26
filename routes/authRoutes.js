@@ -12,7 +12,8 @@ const {
     logout,
     updatePassword,
     forgotPasswordToken,
-    resetPassword
+    resetPassword,
+    loginAdmin
 } = require('../controller/userController');
 const {
     authMiddleware,
@@ -26,6 +27,7 @@ router.put('/reset-password/:token', resetPassword)
 
 router.put('/password', authMiddleware, updatePassword)
 router.post('/login', loginUserController)
+router.post('/admin-login', loginAdmin)
 router.get('/all-users', getAllUsers)
 router.get('/refresh', handleRefreshToken)
 router.get('/logout', logout)
