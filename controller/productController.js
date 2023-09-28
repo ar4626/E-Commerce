@@ -3,7 +3,7 @@ const User = require('../models/userModel');
 const asyncHandler = require('express-async-handler');
 const slugify = require('slugify');
 const validateMongoDbId = require('../utils/validateMongoose');
-const clodinaryUploadImg = require('../utils/cloudinary')
+const {clodinaryUploadImg, clodinaryDeleteImg} = require('../utils/cloudinary')
 const fs = require('fs')
 
 
@@ -211,8 +211,8 @@ const rating = asyncHandler(async (req, res) => {
 });
 
 const uploadImages = asyncHandler(async (req, res) => {
-    const { id } = req.params;
-    validateMongoDbId(id)
+    // const { id } = req.params;
+    // validateMongoDbId(id)
     try {
         const uploader = (path) => clodinaryUploadImg(path, "images");
         const urls = [];
@@ -225,22 +225,41 @@ const uploadImages = asyncHandler(async (req, res) => {
             urls.push(newpath);
             fs.unlinkSync(path);
         }
-        const existingProduct = await Product.findById(id);
+
+        const images = urls.map((file)=> {
+            return file;
+        });
+        res.json(images);
+        // const existingProduct = await Product.findById(id);
 
         // Combine the existing images with the new ones
-        const updatedImages = existingProduct.images.concat(urls);
+        // const updatedImages = existingProduct.images.concat(urls);
 
         // Update the product with the combined image URLs
-        const findProduct = await Product.findByIdAndUpdate(id, {
-            images: updatedImages,
-            // images: urls.map((file)=>{
-            //     return file
-            // }),
-        }, {
-            new: true,
-        }
-        );
-        res.json(findProduct);
+        // const findProduct = await Product.findByIdAndUpdate(id, {
+        //     images: updatedImages,
+        //     // images: urls.map((file)=>{
+        //     //     return file
+        //     // }),
+        // }, {
+        //     new: true,
+        // }
+        // );
+        // res.json(findProduct);
+    } catch (err) {
+        throw new Error(err)
+    }
+})
+
+
+
+const deleteImages = asyncHandler(async (req, res) => {
+    const { id } = req.params;
+    try {
+        const uploader = clodinaryDeleteImg(id, "images");
+        res.json({message: "Deleted image"})
+        
+
     } catch (err) {
         throw new Error(err)
     }
@@ -255,5 +274,6 @@ module.exports = {
     deleteProduct,
     addToWishList,
     rating,
-    uploadImages
+    uploadImages,
+    deleteImages 
 }
