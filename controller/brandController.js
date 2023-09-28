@@ -2,7 +2,7 @@ const Brand = require('../models/brandModel')
 const asyncHandler = require('express-async-handler')
 const validateMongoDbId = require('../utils/validateMongoose');
 
-//creating a new category
+//creating a new brand
 const createBrand = asyncHandler(async (req,res) => {
     try{
         const newcategory = await Brand.create(req.body);
@@ -12,7 +12,7 @@ const createBrand = asyncHandler(async (req,res) => {
     }
 });
 
-//update the category
+//update the brand
 const updateBrand = asyncHandler(async (req, res)=> {
     const  {id} = req.params;
     validateMongoDbId(id);
@@ -26,7 +26,7 @@ const updateBrand = asyncHandler(async (req, res)=> {
     }
 })
 
-//delete category
+//delete brand
 const deleteBrand = asyncHandler(async (req, res) => {
     const {id} = req.params;
     validateMongoDbId(id);
@@ -38,7 +38,7 @@ const deleteBrand = asyncHandler(async (req, res) => {
     }
 });
 
-//fetch a category
+//fetch a brand
 const getaBrand = asyncHandler(async(req,res) => {
     const {id}= req.params;
     validateMongoDbId(id);
@@ -50,7 +50,7 @@ const getaBrand = asyncHandler(async(req,res) => {
     }
 })
 
-//Fetching all category
+//Fetching all brand
 const getAllBrand = asyncHandler(async (req,res) => {
     try{
         const brands = await Brand.find();

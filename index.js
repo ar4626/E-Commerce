@@ -24,6 +24,7 @@ app.use('/api/blog', require('./routes/blogRoutes'))
 app.use('/api/prodcategory',require('./routes/prodcategoryRoutes'))
 app.use('/api/blogcategory',require('./routes/blogcategoryRouter'))
 app.use('/api/brand',require('./routes/brandRouter'))
+app.use('/api/color',require('./routes/colorRoutes'))
 app.use('/api/coupon', require('./routes/couponRouter'))
 
 app.use(notFound);
