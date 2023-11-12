@@ -7,13 +7,16 @@ const { notFound,errorHandler } = require('./middlewares/errorHandler');
 const PORT = process.env.PORT || 4000;
 const cookieParser = require('cookie-parser');
 const morgan = require('morgan');
+const cors = require('cors');
 
 // const authRoute = require('./routes/authRoutes')
 
 //configuration of database and calling it form config
 dbConnect();
 
+
 app.use(morgan("dev"));
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:false}));
 app.use(cookieParser());
@@ -27,6 +30,7 @@ app.use('/api/brand',require('./routes/brandRouter'))
 app.use('/api/color',require('./routes/colorRoutes'))
 app.use('/api/coupon', require('./routes/couponRouter'))
 app.use('/api/enquiry', require('./routes/enquiryRoutes'))
+app.use('/api/upload', require('./routes/uploadRoute'))
 
 app.use(notFound);
 app.use(errorHandler);
