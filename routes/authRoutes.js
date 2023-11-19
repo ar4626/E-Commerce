@@ -18,13 +18,13 @@ const {
     saveAddress,
     userCart,
     getUserCart,
-    emptyCart,
-    applyCoupon,
+    // emptyCart,
+    // applyCoupon,
     createOrder,
-    getOrder,
-    updateOrderStatus,
-    getAllOrder,
-    getOrderByUserId,
+    // getOrder,
+    // updateOrderStatus,
+    // getAllOrder,
+    // getOrderByUserId,
     removeProductFromCart,
     updateProductQuantityFromCart
 } = require('../controller/userController');
@@ -37,18 +37,18 @@ const router = express.Router();
 router.post('/register', createUser)
 router.post('/forgot-password-token', forgotPasswordToken)
 router.put('/reset-password/:token', resetPassword)
-router.put('/order/update-order/:id', authMiddleware, isAdmin, updateOrderStatus)
+// router.put('/order/update-order/:id', authMiddleware, isAdmin, updateOrderStatus)
 
 router.put('/password', authMiddleware, updatePassword)
 router.post('/login', loginUserController)
 router.post('/admin-login', loginAdmin)
 router.post('/cart', authMiddleware,userCart)
-router.post('/cart/applycoupon', authMiddleware,applyCoupon)
-router.post('/cart/cash-order', authMiddleware,createOrder)
+// router.post('/cart/applycoupon', authMiddleware,applyCoupon)
+router.post('/cart/create-order', authMiddleware,createOrder)
 router.get('/all-users', getAllUsers)
-router.get('/get-orders',authMiddleware, getOrder)
-router.get('/getallorders',authMiddleware, isAdmin, getAllOrder)
-router.post('/getOrderByUser/:id',authMiddleware, isAdmin, getOrderByUserId)
+// router.get('/get-orders',authMiddleware, getOrder)
+// router.get('/getallorders',authMiddleware, isAdmin, getAllOrder)
+// router.post('/getOrderByUser/:id',authMiddleware, isAdmin, getOrderByUserId)
 router.get('/refresh', handleRefreshToken)
 router.get('/logout', logout)
 router.get('/wishlist', authMiddleware, getWishlist)
@@ -56,7 +56,7 @@ router.get('/cart', authMiddleware, getUserCart)
 
 
 router.get('/:id', authMiddleware, isAdmin, getaUser)
-router.delete('/empty-cart',authMiddleware, emptyCart)
+// router.delete('/empty-cart',authMiddleware, emptyCart)
 router.delete('/:id', deleteaUser)
 router.delete('/delete-product-cart/:cartItemId', authMiddleware,removeProductFromCart)
 router.delete('/update-product-cart/:cartItemId/:newQuantity', authMiddleware,updateProductQuantityFromCart)
