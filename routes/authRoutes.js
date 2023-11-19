@@ -32,6 +32,7 @@ const {
     authMiddleware,
     isAdmin
 } = require('../middlewares/authMiddleware');
+const { checkout, paymentVerification } = require('../controller/paymentController');
 const router = express.Router();
 
 router.post('/register', createUser)
@@ -45,6 +46,10 @@ router.post('/admin-login', loginAdmin)
 router.post('/cart', authMiddleware,userCart)
 // router.post('/cart/applycoupon', authMiddleware,applyCoupon)
 router.post('/cart/create-order', authMiddleware,createOrder)
+router.post('/order/checkout',authMiddleware, checkout)
+router.post('/order/paymentVerification',authMiddleware, paymentVerification)
+
+
 router.get('/all-users', getAllUsers)
 // router.get('/get-orders',authMiddleware, getOrder)
 // router.get('/getallorders',authMiddleware, isAdmin, getAllOrder)

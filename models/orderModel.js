@@ -24,6 +24,10 @@ var orderSchema = new mongoose.Schema({
             type: String,
             required: true,
         },
+        mobile: {
+            type: String,
+            required: true,
+        },
         state: {
             type: String,
             required: true,
@@ -32,7 +36,7 @@ var orderSchema = new mongoose.Schema({
             type: String,
             required: true,
         },
-        other: {
+        landmark: {
             type: String,
             required: true,
         },
