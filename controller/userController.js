@@ -438,7 +438,7 @@ const createOrder = asyncHandler(async (req, res) => {
             totalPrice,
             totalPriceAfterDiscount,
             paymentInfo,
-            User:_id
+            user:_id
         })
         res.json({
             order,

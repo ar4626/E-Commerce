@@ -5,14 +5,14 @@ var orderSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User',
-        // required: true,
+        required: true,
     },
     shippingInfo: {
-        firstName: {
+        firstname: {
             type: String,
             required: true,
         },
-        lastName: {
+        lastname: {
             type: String,
             required: true,
         },
@@ -46,7 +46,7 @@ var orderSchema = new mongoose.Schema({
         }
     },
     paymentInfo: {
-        razopayOrderId: {
+        razorpayOrderId: {
             type: String,
             required: true,
         },

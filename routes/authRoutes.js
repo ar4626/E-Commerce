@@ -45,7 +45,7 @@ router.post('/login', loginUserController)
 router.post('/admin-login', loginAdmin)
 router.post('/cart', authMiddleware,userCart)
 // router.post('/cart/applycoupon', authMiddleware,applyCoupon)
-router.post('/cart/create-order', authMiddleware,createOrder)
+router.post('/cart/createOrder', authMiddleware,createOrder)
 router.post('/order/checkout',authMiddleware, checkout)
 router.post('/order/paymentVerification',authMiddleware, paymentVerification)
 

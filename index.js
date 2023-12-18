@@ -14,6 +14,11 @@ const cors = require('cors');
 //configuration of database and calling it form config
 dbConnect();
 
+app.use(cors({
+    origin:["https://ecommerce-app-api-xi.vercel.app"],
+    methods:["GET", "POST", "PUT"],
+    credentials:true,
+})) 
 
 app.use(morgan("dev"));
 app.use(cors());
@@ -35,9 +40,9 @@ app.use('/api/upload', require('./routes/uploadRoute'))
 app.use(notFound);
 app.use(errorHandler);
 
-// app.use('/', (req, res) => {
-//     res.send("Welcome to Ecommerce Application")
-// }); 
+app.use('/', (req, res) => {
+    res.send("Welcome to Ecommerce Application")
+}); 
 
 app.listen(PORT, () => {
     console.log(`Server is running at Port ${PORT}`);

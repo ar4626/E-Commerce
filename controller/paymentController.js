@@ -1,19 +1,20 @@
 const Razorpay = require('razorpay');
 const instance = new Razorpay({
-    key_id: "",
-    key_secret: "",
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_SECRET_KEY,
 })
 
 const checkout = async (req, res) => {
+    const {amount} = req.body 
     const option = {
-        amount : 5000,
+        amount : amount * 100,
         currency : "INR",
     }
-    const order = await instance.order.create(option)
+    const order = await instance.orders.create(option)
     res.json({
-        success: true,
+        success: true, 
         order
-    })
+    }) 
 }
 
 const paymentVerification = async (req, res) => {
