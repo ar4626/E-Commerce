@@ -18,7 +18,7 @@ app.use(cors({
     origin:["https://ecommerce-app-api-xi.vercel.app"],
     methods:["GET", "POST", "PUT"],
     credentials:true,
-})) 
+}))
 
 app.use(morgan("dev"));
 app.use(cors());
@@ -41,7 +41,7 @@ app.use(notFound);
 app.use(errorHandler);
 
 app.use('/', (req, res) => {
-    res.send("Welcome to Ecommerce Application")
+    res.json("Welcome to Ecommerce Application")
 }); 
 
 app.listen(PORT, () => {
