@@ -40,9 +40,9 @@ app.use('/api/upload', require('./routes/uploadRoute'))
 app.use(notFound);
 app.use(errorHandler);
 
-app.use('/', (req, res) => {
-    res.json("Welcome to Ecommerce Application")
-}); 
+// app.use('/', (req, res) => {
+//     res.send("Welcome to Ecommerce Application")
+// }); 
 
 app.listen(PORT, () => {
     console.log(`Server is running at Port ${PORT}`);
