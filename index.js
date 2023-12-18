@@ -14,11 +14,7 @@ const cors = require('cors');
 //configuration of database and calling it form config
 dbConnect();
 
-app.use(cors({
-    origin:["https://ecommerce-app-api-xi.vercel.app"],
-    methods:["GET", "POST", "PUT"],
-    credentials:true,
-}))
+
 
 app.use(morgan("dev"));
 app.use(cors());
